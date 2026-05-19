@@ -1,83 +1,48 @@
 import wandb
 from wandb.integration.keras import WandbMetricsLogger, WandbModelCheckpoint
-
 import tensorflow as tf
-
+import argparse
+import yaml
 import os
-os.makedirs("models/usecase-2: LSTM/checkpoints", exist_ok=True)
 
-max_words = 5000
-(X_train, y_train), (X_test, y_test) = tf.keras.datasets.imdb.load_data(num_words=max_words)
+from data  import load_data
+from model import RNN
 
-max_len = 500
-X_train = tf.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=max_len)
-X_test = tf.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=max_len)
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", type=str, default="configs/usecase-2/lstm/baseline.yaml")
+args = parser.parse_args()
+
+with open(args.config, "r") as f:
+    cfg_file = yaml.safe_load(f)
+
+os.makedirs("models/usecase-2/lstm/checkpoints", exist_ok=True)
+os.makedirs("logs/usecase-2/lstm", exist_ok=True)
 
 wandb.init(
-    project="dnn_lab5",
-    config={
-        "max_len": max_len,
-        "max_words": max_words,
-        "embedding_dim": 32,
-        "lstm_units": 100,
-        "batch_size": 64,
-        "epochs": 5,
-        "optimizer": "adam",
-        "loss": "binary_crossentropy",
-    }
+    project=cfg_file["project"],
+    config=cfg_file["config"],
+    job_type="train"
 )
 
 config = wandb.config
 
-class RNN(tf.keras.Model):
-    def __init__(
-        self,
-        max_len: int = config.max_len,
-        max_words: int = config.max_words,
-        embedding_dim: int = config.embedding_dim,
-        lstm_units: int = config.lstm_units,
-        **kwargs,
-    ):
-        super(RNN, self).__init__(**kwargs)
+(X_train, y_train), (X_test, y_test) = load_data(
+    max_words=config.max_words,
+    max_len=config.max_len,
+)
 
-        self.max_len = max_len
-        self.max_words = max_words
-        self.embedding_dim = embedding_dim
-        self.lstm_units = lstm_units
+model = RNN(
+    max_len=config.max_len,
+    max_words=config.max_words,
+    embedding_dim=config.embedding_dim,
+    lstm_units=config.lstm_units,
+)
 
-        self.network = tf.keras.Sequential([
-            tf.keras.layers.Input(shape=(max_len,), name="inputs"),
-            tf.keras.layers.Embedding(input_dim=max_words, output_dim=embedding_dim, input_length=max_len, name="embedding"),
-            tf.keras.layers.LSTM(units=lstm_units, name="lstm"),
-            tf.keras.layers.Dense(units=1, name="output"),
-            tf.keras.layers.Activation("sigmoid", name="sigmoid"),
-        ], name="rnn_sequential")
-
-    def call(self, x):
-        return self.network(x)
-
-    def get_config(self):
-        config = super(RNN, self).get_config()
-        config.update({
-            "max_len": self.max_len,
-            "max_words": self.max_words,
-            "embedding_dim": self.embedding_dim,
-            "lstm_units": self.lstm_units,
-        })
-        return config
-
-    @classmethod
-    def from_config(cls, config):
-        return cls(**config)
-
-model = RNN()
 model.compile(
     loss=config.loss,
     optimizer=config.optimizer,
     metrics=["accuracy"],
 )
-
-print(model.network.summary())
 
 callbacks = [
     tf.keras.callbacks.EarlyStopping(
@@ -87,8 +52,14 @@ callbacks = [
         restore_best_weights=True,
     ),
     WandbMetricsLogger(log_freq="epoch"),
+    tf.keras.callbacks.TensorBoard(
+        log_dir="logs/usecase-2/lstm",
+        histogram_freq=1,
+        write_graph=True,
+        write_images=True,
+    ),
     WandbModelCheckpoint(
-        filepath="models/usecase-2: LSTM/checkpoints/rnn_{epoch:02d}.keras",
+        filepath="models/usecase-2/lstm/checkpoints/rnn_{epoch:02d}.keras",
         monitor="val_loss"
     ),
 ]
@@ -102,7 +73,6 @@ history = model.fit(
     callbacks=callbacks,
 )
 
-scores = model.evaluate(X_test, y_test)
-print("Accuracy: %.2f%%" % (scores[1]*100))
+model.save("models/usecase-2/lstm/rnn_final.keras")
 
 wandb.finish()
