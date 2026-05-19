@@ -54,6 +54,7 @@ model.compile(optimizer=config.optimizer,
               metrics=[config.metric]
               )
 
+
 # WandbMetricsLogger will log train and validation metrics to wandb
 # WandbModelCheckpoint will upload model checkpoints to wandb
 history = model.fit(x=x_train, y=y_train,
@@ -62,7 +63,17 @@ history = model.fit(x=x_train, y=y_train,
                     validation_data=(x_test, y_test),
                     callbacks=[
                       WandbMetricsLogger(log_freq=5),
-                      WandbModelCheckpoint("../models/model.keras")
+                      WandbModelCheckpoint("/models/model.keras")
+                    ])
+
+
+history = model.fit(x=x_train, y=y_train,
+                    epochs=config.epoch,
+                    batch_size=config.batch_size,
+                    validation_split=0.2,
+                    callbacks=[
+                      WandbMetricsLogger(log_freq=5),
+                      WandbModelCheckpoint("/models/model.keras")
                     ])
 
 # [optional] finish the wandb run, necessary in notebooks
