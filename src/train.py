@@ -68,7 +68,7 @@ history = model.fit(x=x_train, y=y_train,
                     validation_split=0.2,
                     callbacks=[
                       WandbMetricsLogger(log_freq=5),
-                      WandbModelCheckpoint("../models/model.keras")
+                      WandbModelCheckpoint("models/model.keras")
                     ])
 
 wandb.finish()
