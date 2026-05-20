@@ -20,6 +20,9 @@ arch = cfg_file["arch"]
 config_name = os.path.splitext(os.path.basename(args.config))[0]
 run_name = f"eval/{usecase}/{arch}/{config_name}"
 
+if args.model is None:
+    args.model = f"models/{usecase}/{arch}/{config_name}.keras"
+
 wandb.init(
     project=cfg_file["project"],
     config=cfg_file["config"],
