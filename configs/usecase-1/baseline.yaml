@@ -1,0 +1,13 @@
+project: dnn_lab5
+
+config:
+  max_len: 150
+  max_words: 1000
+  embedding_dim: 50
+  lstm_units: 64
+  dense_units: 256
+  dropout_rate: 0.5
+  batch_size: 128
+  epochs: 10
+  optimizer: rmsprop
+  loss: binary_crossentropy

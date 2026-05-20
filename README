@@ -1,0 +1,4 @@
+tensorboard --logdir logs/
+
+python src/train.py --config configs/usecase-2/lstm/baseline.yaml
+python src/evaluate.py --config configs/usecase-2/lstm/baseline.yaml --model models/usecase-2/lstm/rnn_final.keras
