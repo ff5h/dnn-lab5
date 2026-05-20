@@ -1,0 +1,13 @@
+project: dnn_lab5
+
+config:
+  max_len: 500
+  max_words: 5000
+  embedding_dim: 32
+  lstm_units: 100
+  filters: 32
+  kernel_size: 3
+  batch_size: 64
+  epochs: 10
+  optimizer: adam
+  loss: binary_crossentropy
