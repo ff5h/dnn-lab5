@@ -79,5 +79,6 @@ model.fit(
     callbacks=callbacks,
 )
 
-model.save("models/usecase-1/rnn_final.keras")
+config_name = os.path.splitext(os.path.basename(args.config))[0]
+model.save("models/usecase-1/{config_name}.keras")
 wandb.finish()
