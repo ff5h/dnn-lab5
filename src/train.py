@@ -13,14 +13,14 @@ from data  import load_data
 from model import RNN
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--config", type=str, default="configs/usecase-2/lstm+cnn/baseline.yaml")
+parser.add_argument("--config", type=str, default="configs/usecase-2/lstm+cnn+dropout/baseline.yaml")
 args = parser.parse_args()
 
 with open(args.config, "r") as f:
     cfg_file = yaml.safe_load(f)
 
-os.makedirs("models/usecase-2/lstm+cnn/checkpoints", exist_ok=True)
-os.makedirs("logs/usecase-2/lstm+cnn", exist_ok=True)
+os.makedirs("models/usecase-2/lstm+cnn+dropout/checkpoints", exist_ok=True)
+os.makedirs("logs/usecase-2/lstm+cnn+dropout", exist_ok=True)
 
 wandb.init(
     project=cfg_file["project"],
@@ -59,13 +59,13 @@ callbacks = [
     ),
     WandbMetricsLogger(log_freq="epoch"),
     tf.keras.callbacks.TensorBoard(
-        log_dir="logs/usecase-2/lstm+cnn",
+        log_dir="logs/usecase-2/lstm+cnn+dropout",
         histogram_freq=1,
         write_graph=True,
         write_images=True,
     ),
     WandbModelCheckpoint(
-        filepath="models/usecase-2/lstm+cnn/checkpoints/rnn_{epoch:02d}.keras",
+        filepath="models/usecase-2/lstm+cnn+dropout/checkpoints/rnn_{epoch:02d}.keras",
         monitor="val_loss"
     ),
 ]
@@ -79,6 +79,6 @@ history = model.fit(
     callbacks=callbacks,
 )
 
-model.save("models/usecase-2/lstm+cnn/rnn_final.keras")
+model.save("models/usecase-2/lstm+cnn+dropout/rnn_final.keras")
 
 wandb.finish()

@@ -9,6 +9,8 @@ class RNN(tf.keras.Model):
         lstm_units: int,
         filters: int,
         kernel_size: int,
+        dropout_rate: float,
+        recurrent_dropout: float,
         **kwargs,
     ):
         super(RNN, self).__init__(**kwargs)
@@ -19,12 +21,18 @@ class RNN(tf.keras.Model):
         self.lstm_units = lstm_units
         self.filters       = filters
         self.kernel_size   = kernel_size
+        self.dropout_rate      = dropout_rate
+        self.recurrent_dropout = recurrent_dropout
 
         self.network = tf.keras.Sequential([
             tf.keras.layers.Input(shape=(max_len,), name="inputs"),
             tf.keras.layers.Embedding(input_dim=max_words, output_dim=embedding_dim, input_length=max_len, name="embedding"),
             tf.keras.layers.Conv1D(filters=filters, kernel_size=kernel_size, padding='same', activation='relu', name='conv1d'),
-            tf.keras.layers.LSTM(units=lstm_units, name="lstm"),
+            tf.keras.layers.Dropout(rate=dropout_rate, name="conv_dropout"),
+            tf.keras.layers.LSTM(units=lstm_units,
+                                 dropout=dropout_rate,
+                                 recurrent_dropout=recurrent_dropout,
+                                 name="lstm"),
             tf.keras.layers.Dense(units=1, name="output"),
             tf.keras.layers.Activation("sigmoid", name="sigmoid"),
         ], name="rnn_sequential")
@@ -41,6 +49,8 @@ class RNN(tf.keras.Model):
             "lstm_units": self.lstm_units,
             "filters": self.filters,
             "kernel_size": self.kernel_size,
+            "dropout_rate":      self.dropout_rate,
+            "recurrent_dropout": self.recurrent_dropout
         })
         return config
 

@@ -7,8 +7,8 @@ from model import RNN
 from data import load_data
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--config", type=str, default="configs/usecase-2/lstm+cnn/baseline.yaml")
-parser.add_argument("--model",  type=str, default="models/usecase-2/lstm+cnn/rnn_final.keras")
+parser.add_argument("--config", type=str, default="configs/usecase-2/lstm+cnn+dropout/baseline.yaml")
+parser.add_argument("--model",  type=str, default="models/usecase-2/lstm+cnn+dropout/rnn_final.keras")
 args = parser.parse_args()
 
 with open(args.config, "r") as f:
