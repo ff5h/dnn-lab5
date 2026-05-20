@@ -8,7 +8,7 @@ from data import load_data
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--config", type=str, default="configs/usecase-1/baseline.yaml")
-parser.add_argument("--model",  type=str, default="models/usecase-1/rnn_final.keras")
+parser.add_argument("--model",  type=str, default=None)
 args = parser.parse_args()
 
 with open(args.config, "r") as f:

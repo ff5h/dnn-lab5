@@ -9,5 +9,5 @@ config:
   dropout_rate: 0.5
   batch_size: 128
   epochs: 10
-  optimizer: rmsprop
+  optimizer: adam
   loss: binary_crossentropy

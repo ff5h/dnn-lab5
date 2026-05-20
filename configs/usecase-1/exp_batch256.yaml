@@ -7,7 +7,7 @@ config:
   lstm_units: 64
   dense_units: 256
   dropout_rate: 0.5
-  batch_size: 128
+  batch_size: 256
   epochs: 10
   optimizer: rmsprop
   loss: binary_crossentropy
