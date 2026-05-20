@@ -2,22 +2,29 @@ import wandb
 import tensorflow as tf
 import argparse
 import yaml
+import os
 
 from model import RNN
 from data import load_data
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--config", type=str, default="configs/usecase-2/lstm/baseline.yaml")
-parser.add_argument("--model",  type=str, default="models/usecase-2/lstm/rnn_final.keras")
+parser.add_argument("--model",  type=str, default=None)
 args = parser.parse_args()
 
 with open(args.config, "r") as f:
     cfg_file = yaml.safe_load(f)
 
+usecase = cfg_file["usecase"]
+arch = cfg_file["arch"]
+config_name = os.path.splitext(os.path.basename(args.config))[0]
+run_name = f"eval/{usecase}/{arch}/{config_name}"
+
 wandb.init(
     project=cfg_file["project"],
     config=cfg_file["config"],
     job_type="eval",
+    name=run_name,
 )
 config = wandb.config
 

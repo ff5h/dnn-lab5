@@ -5,9 +5,9 @@ arch: lstm
 config:
   max_len: 500
   max_words: 5000
-  embedding_dim: 32
-  lstm_units: 100
-  batch_size: 64
+  embedding_dim: 64
+  lstm_units: 128
+  batch_size: 128
   epochs: 10
   optimizer: adam
   loss: binary_crossentropy

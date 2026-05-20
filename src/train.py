@@ -19,13 +19,19 @@ args = parser.parse_args()
 with open(args.config, "r") as f:
     cfg_file = yaml.safe_load(f)
 
-os.makedirs("models/usecase-2/lstm/checkpoints", exist_ok=True)
-os.makedirs("logs/usecase-2/lstm", exist_ok=True)
+usecase = cfg_file["usecase"]
+arch = cfg_file["arch"]
+config_name = os.path.splitext(os.path.basename(args.config))[0]
+run_name = f"{usecase}/{arch}/{config_name}"
+
+os.makedirs(f"models/{usecase}/{arch}/checkpoints", exist_ok=True)
+os.makedirs(f"logs/{usecase}/{arch}", exist_ok=True)
 
 wandb.init(
     project=cfg_file["project"],
     config=cfg_file["config"],
-    job_type="train"
+    job_type="train",
+    name=run_name,
 )
 
 config = wandb.config
@@ -57,13 +63,13 @@ callbacks = [
     ),
     WandbMetricsLogger(log_freq="epoch"),
     tf.keras.callbacks.TensorBoard(
-        log_dir="logs/usecase-2/lstm",
+        log_dir=f"logs/{usecase}/{arch}",
         histogram_freq=1,
         write_graph=True,
         write_images=True,
     ),
     WandbModelCheckpoint(
-        filepath="models/usecase-2/lstm/checkpoints/rnn_{epoch:02d}.keras",
+        filepath=f"models/{usecase}/{arch}/checkpoints/{config_name}_{{epoch:02d}}.keras",
         monitor="val_loss"
     ),
 ]
@@ -77,7 +83,6 @@ history = model.fit(
     callbacks=callbacks,
 )
 
-config_name = os.path.splitext(os.path.basename(args.config))[0]
-model.save(f"models/usecase-2/lstm/{config_name}.keras")
+model.save(f"models/{usecase}/{arch}/{config_name}.keras")
 
 wandb.finish()
