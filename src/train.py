@@ -79,6 +79,7 @@ history = model.fit(
     callbacks=callbacks,
 )
 
-model.save("models/usecase-2/lstm+dropout/rnn_final.keras")
+config_name = os.path.splitext(os.path.basename(args.config))[0]
+model.save(f"models/usecase-2/lstm+dropout/{config_name}.keras")
 
 wandb.finish()
