@@ -27,6 +27,7 @@ wandb.init(
     project=cfg_file["project"],
     config=cfg_file["config"],
     job_type="train",
+    name=config_name,
 )
 config = wandb.config
 

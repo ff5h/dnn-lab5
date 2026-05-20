@@ -2,6 +2,7 @@ import wandb
 import tensorflow as tf
 import argparse
 import yaml
+import os
 
 from model import RNN
 from data import load_data
@@ -14,10 +15,16 @@ args = parser.parse_args()
 with open(args.config, "r") as f:
     cfg_file = yaml.safe_load(f)
 
+config_name = os.path.splitext(os.path.basename(args.config))[0]
+
+if args.model is None:
+    args.model = f"models/usecase-1/{config_name}.keras"
+
 wandb.init(
     project=cfg_file["project"],
     config=cfg_file["config"],
     job_type="eval",
+    name=f"eval-{config_name}"
 )
 config = wandb.config
 
