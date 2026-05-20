@@ -19,6 +19,7 @@ args = parser.parse_args()
 with open(args.config, "r") as f:
     cfg_file = yaml.safe_load(f)
 
+config_name = os.path.splitext(os.path.basename(args.config))[0]
 os.makedirs("models/usecase-1/checkpoints", exist_ok=True)
 os.makedirs("logs/usecase-1", exist_ok=True)
 
@@ -64,7 +65,7 @@ callbacks = [
     ),
     WandbMetricsLogger(log_freq="epoch"),
     WandbModelCheckpoint(
-        filepath="models/usecase-1/checkpoints/rnn_{epoch:02d}.keras",
+        filepath=f"models/usecase-1/checkpoints/{config_name}_{{epoch:02d}}.keras",
         monitor="val_loss",
         save_best_only=False,
     ),
@@ -79,6 +80,5 @@ model.fit(
     callbacks=callbacks,
 )
 
-config_name = os.path.splitext(os.path.basename(args.config))[0]
 model.save(f"models/usecase-1/{config_name}.keras")
 wandb.finish()
