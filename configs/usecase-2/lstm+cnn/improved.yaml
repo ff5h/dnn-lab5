@@ -5,11 +5,11 @@ arch: lstm+cnn
 config:
   max_len: 500
   max_words: 5000
-  embedding_dim: 32
-  lstm_units: 100
-  filters: 32
-  kernel_size: 3
-  batch_size: 64
+  embedding_dim: 64
+  lstm_units: 128
+  filters: 64
+  kernel_size: 5
+  batch_size: 128
   epochs: 10
   optimizer: adam
   loss: binary_crossentropy
